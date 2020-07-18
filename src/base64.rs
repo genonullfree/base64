@@ -1,13 +1,8 @@
-pub fn print_base64(input: &Vec<char>) {
-    // translate the vector of chars to a string
-    let s: String = input.into_iter().map(|c| *c as char).collect();
-    println!("{}", s);
-}
-
 pub fn encode(bytes: &mut Vec<u8>) -> Vec<char> {
+    let mut intermediate: Vec<u8> = Vec::new();
+
     // see if there are any remainders mod 3
     let leftover = bytes.len() % 3;
-    let mut intermediate: Vec<u8> = Vec::new();
 
     // if there are remainders, add "0"s for padding to be divisible by 3
     let mut count = 0;
@@ -45,7 +40,7 @@ pub fn encode(bytes: &mut Vec<u8>) -> Vec<char> {
         }
     }
 
-    // return base64
+    // return Vec<char>
     output
 }
 
@@ -58,6 +53,7 @@ fn munch_bytes(group: &[u8]) -> Vec<u8> {
     out.push(((group[1] & 0x0f) << 2) | (group[2] >> 6));
     out.push(group[2] & 0x3f);
 
+    // return Vec<u8>
     out
 }
 
@@ -72,6 +68,6 @@ fn match_to_b64_char(input: &Vec<u8>) -> Vec<char> {
     // map and collect the translations into an output vector
     let b64: Vec<char> = input.into_iter().map(|x| possible[*x as usize]).collect();
 
-    // return match
+    // return Vec<char>
     b64
 }
