@@ -61,6 +61,7 @@ pub fn decode(bytes: &mut Vec<char>) -> Vec<u8> {
         return output;
     }
 
+    // check if 0, 1 or 2 bytes of padding, and remove it
     if bytes.last() == Some(&'=') {
         bytes.pop();
         padding += 1;
@@ -70,24 +71,30 @@ pub fn decode(bytes: &mut Vec<char>) -> Vec<u8> {
         }
     }
 
+    // translate input base64 buffer to u6 values
     let mut translated: Vec<u8> = translate_to_u6(bytes);
 
+    // if there was padding, add it back in
     for _ in 0..padding {
         translated.push(0);
     }
 
+    // convert the 4byte u6 to 3byte u8
     output = u6_to_u8(translated);
 
+    // remove the padding bytes again, if any
     for _ in 0..padding {
         output.pop();
     }
 
+    // return Vec<u8>
     output
 }
 
 fn u6_to_u8(input: Vec<u8>) -> Vec<u8> {
     let mut output: Vec<u8> = Vec::new();
 
+    // convert 4 6-bit values to 3 8-bit values
     for i in (0..input.len()).step_by(4) {
         output.push(input[i] << 2 | input[i+1] >> 4);
         output.push(input[i+1] << 4 | input[i+2] >> 4);
@@ -99,8 +106,10 @@ fn u6_to_u8(input: Vec<u8>) -> Vec<u8> {
 }
 
 fn translate_to_u6(input: &mut Vec<char>) -> Vec<u8> {
+    // iterate through and map the base64 chars to the u6 array index values and return as a Vec<u8>
     let u6vec: Vec<u8> = input.into_iter().map(|x| POSSIBLE.iter().position(|y| x == y).unwrap() as u8).collect();
 
+    // return Vec<u8>
     u6vec
 }
 
